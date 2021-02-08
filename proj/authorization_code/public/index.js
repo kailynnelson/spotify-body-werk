@@ -25,7 +25,7 @@
 
 	var playlistSource = document.getElementById('playlist-template').innerHTML,
 		playlistTemplate = Handlebars.compile(playlistSource),
-		playlistPlaceholder = document.getElementById('playlist');
+		playlistPlaceholder = document.getElementById('playlist-profile');
 
 	var params = getHashParams();
 
@@ -83,17 +83,22 @@
 		document
 			.getElementById('get-playlist')
 			.addEventListener('click', function () {
-				console.log('clicked playlist button');
+				// give it the id of my 'body werk set u free' playlist
+				var playlist_id = '3PoDunH7BeHQxWmRhDCOfC';
+				// declare oath token: https://developer.spotify.com/console/get-playlist/
+				var bearer_token =
+					'BQBKkLdMWQa84Md6ds_QKYRjpErG1OOwxh1V73souKzQZlJxefKxPZBMyj_jV_q37NOx2rE35ldQ4EVbjnAk6C-xaNCdthIA-90A-vGws-3VhUWvsTJH40ZjNeO7F-PBzKORhAlt6i94kVJbddKQ7bWdKVIVGAX0';
 				$.ajax({
-					url: '/playlist',
-					data: {
-						access_token: access_token,
+					url: 'https://api.spotify.com/v1/playlists/' + playlist_id,
+					headers: {
+						Authorization: 'Bearer ' + bearer_token,
 					},
+					json: true,
 				}).done(function (data) {
+					console.log('got playlist ╰(*°▽°*)╯ ', data);
 					playlistPlaceholder.innerHTML = playlistTemplate({
 						playlist_id: playlist_id,
 					});
-					console.log('done w/ get-playlist');
 				});
 			});
 	}
