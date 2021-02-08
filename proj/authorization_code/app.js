@@ -15,7 +15,6 @@ var cookieParser = require('cookie-parser');
 
 var client_id = '1234'; // Your client id
 var client_secret = '5678'; // Your secret
-
 var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
 
 /**
@@ -47,7 +46,7 @@ app.get('/login', function (req, res) {
 	res.cookie(stateKey, state);
 
 	// your application requests authorization
-	var scope = 'user-read-private user-read-email playlist-read-private';
+	var scope = 'user-read-private user-read-email playlist-read-collaborative';
 	res.redirect(
 		'https://accounts.spotify.com/authorize?' +
 			querystring.stringify({
@@ -105,7 +104,7 @@ app.get('/callback', function (req, res) {
 
 				// use the access token to access the Spotify Web API
 				request.get(options, function (error, response, body) {
-					console.log(body);
+					console.log('printing request body', body);
 				});
 
 				// we can also pass the token to the browser to make requests from there
@@ -151,33 +150,6 @@ app.get('/refresh_token', function (req, res) {
 			res.send({
 				access_token: access_token,
 			});
-		}
-	});
-});
-
-app.get('/playlist', function (req, res) {
-	console.log('start playlist get');
-	// give it the id of my 'body werk set u free' playlist
-	var playlist_id = '3PoDunH7BeHQxWmRhDCOfC';
-	var access_token = req.query.access_token;
-
-	// let's write the options...
-	var playlistOptions = {
-		url: 'https://api.spotify.com/v1/playlists/' + playlist_id + '/tracks',
-		headers: {
-			Authorization:
-				'Basic ' +
-				new Buffer(client_id + ':' + client_secret).toString('base64'),
-		},
-		json: true,
-	};
-	console.log('set playlist options: ', playlistOptions);
-
-	request.post(playlistOptions, function (error, response, body) {
-		console.log('start playlist post request');
-		if (!error && response.statusCode === 200) {
-			console.log('got playlist response: ', response);
-			console.log('got playlist body: ', body);
 		}
 	});
 });
