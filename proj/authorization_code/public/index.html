@@ -14,10 +14,14 @@
          </div>
          <div id="loggedin">
             <div id="user-profile"></div>
-            <div id="oauth"></div>
-            <button class="btn btn-secondary" id="obtain-new-token">Obtain new token using the refresh token</button>
-            <div id="playlist"></div>
-            <button class="btn btn-primary" id="get-playlist">Get playlist</button>
+            <div id="oauth" class="small"></div>
+				<p>
+					<button class="btn btn-sm btn-secondary" id="obtain-new-token">Obtain new token using the refresh token</button>
+				</p>
+            <div id="playlist-profile" style='background-color:red;'></div>
+				<p>
+					<button class="btn btn-primary" id="get-playlist">Get playlist</button>
+				</p>
          </div>
 		</div>
 		
@@ -28,14 +32,13 @@
          <img class="media-object" width="150" src="{{images.0.url}}">
          </div>
          <div class="media-body">
-         <dl class="dl-horizontal"> <dt>ID</dt>
-          <dd>{{id}}</dd> <dt>Email</dt>
-          <dd>{{email}}</dd> <dt>Spotify URI</dt>
-          <dd><a href="{{external_urls.spotify}}">{{external_urls.spotify}}</a>
-          </dd> <dt>Link</dt>
-          <dd><a href="{{href}}">{{href}}</a>
-          </dd> <dt>Country</dt>
-          <dd>{{country}}</dd>
+         <dl class="dl-horizontal"> 
+				<dt>Spotify URI</dt> <dd><a href="{{external_urls.spotify}}">{{external_urls.spotify}}</a></dd> 
+				<dt>ID</dt> <dd>{{id}}</dd>
+				<dt>Email</dt> <dd>{{email}}</dd> 
+				<dt>Country</dt> <dd>{{country}}</dd>
+				<dt>Followers</dt> <dd>{{followers.total}}</dd> 
+				<!-- <dt>Link</dt> <dd><a href="{{href}}">{{href}}</a></dd>  -->
          </dl>
          </div>
          </div>
@@ -44,15 +47,15 @@
       <script id="oauth-template" type="text/x-handlebars-template">
          <h2>oAuth info</h2>
          <dl class="dl-horizontal">
-           <dt>Access token</dt><dd class="text-overflow">{{access_token}}</dd>
-           <dt>Refresh token</dt><dd class="text-overflow">{{refresh_token}}</dd>
+           <dt>Access token</dt> <dd class="text-overflow">{{access_token}}</dd>
+           <dt>Refresh token</dt> <dd class="text-overflow">{{refresh_token}}</dd>
          </dl>
 		</script>
 		
       <script id="playlist-template" type=text/x-handlebars-template">
          <h2>Playlist info</h2>
          <dl class="dl-horizontal">
-         	<dt>Playlist ID</dt><dd class="text-overflow">{{playlist_id}}</dd>
+         	<dt>Playlist ID</dt> <dd class="text-overflow">{{playlist_id}}</dd>
          </dl>
 		</script>
 		
