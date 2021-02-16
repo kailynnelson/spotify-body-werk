@@ -80,26 +80,44 @@
 			false
 		);
 
+		var playlist_tracks = [];
+
 		document
 			.getElementById('get-playlist')
 			.addEventListener('click', function () {
 				// give it the id of my 'body werk set u free' playlist
 				var playlist_id = '3PoDunH7BeHQxWmRhDCOfC';
 				// declare oath token: https://developer.spotify.com/console/get-playlist/
-				var bearer_token =
-					'BQBKkLdMWQa84Md6ds_QKYRjpErG1OOwxh1V73souKzQZlJxefKxPZBMyj_jV_q37NOx2rE35ldQ4EVbjnAk6C-xaNCdthIA-90A-vGws-3VhUWvsTJH40ZjNeO7F-PBzKORhAlt6i94kVJbddKQ7bWdKVIVGAX0';
 				$.ajax({
 					url: 'https://api.spotify.com/v1/playlists/' + playlist_id,
 					headers: {
-						Authorization: 'Bearer ' + bearer_token,
+						Authorization: 'Bearer ' + access_token,
 					},
 					json: true,
 				}).done(function (data) {
 					console.log('got playlist ╰(*°▽°*)╯ ', data);
+
+					playlist_tracks = data.tracks.items;
+					// console.log('got playlist tracks? ', playlist_tracks);
+
+					getPlaylistTrackDanceabilityScores(playlist_tracks);
+
 					playlistPlaceholder.innerHTML = playlistTemplate({
 						playlist_id: playlist_id,
+						playlist_name: data.name,
 					});
 				});
 			});
+	}
+
+	// var playlist_tracks_danceability = [];
+
+	function getPlaylistTrackDanceabilityScores(tracks) {
+		console.log(
+			'got tracks! starting dance score method... (´▽`ʃ♡ƪ) ',
+			tracks
+		);
+
+		return;
 	}
 })();
