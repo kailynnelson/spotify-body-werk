@@ -101,7 +101,12 @@
 					playlist_tracks = data.tracks.items;
 					// console.log('got playlist tracks? ', playlist_tracks);
 
-					getPlaylistTrackDanceabilityScores(playlist_tracks);
+					// TODO: this shouldn't be triggered with a button called 'Get playlist'; should add a button or clarify button text for interaction effect
+					let playlistDanceabilityScores = getPlaylistTrackDanceabilityScores(
+						playlist_tracks
+					);
+
+					getDanceabilityOrderedAsBimodalSine(playlistDanceabilityScores);
 
 					playlistPlaceholder.innerHTML = playlistTemplate({
 						playlist_id: playlist_id,
@@ -111,7 +116,7 @@
 			});
 	}
 
-	// get a list of playlist tracks, with their track IDs
+	// get a list of playlist tracks, with their track IDs' danceability scores
 	var playlist_tracks_danceability = [];
 
 	function getPlaylistTrackDanceabilityScores(tracks) {
@@ -122,13 +127,10 @@
 
 		var trackIds = getPlaylistTracksIds(tracks);
 		console.log("got tracks' IDs (｡･∀･)ﾉﾞ ", trackIds);
-
-		// TODO: get track features! https://developer.spotify.com/documentation/web-api/reference/#category-tracks
-
 		// https://api.jquery.com/jquery.ajax/
 		// declare oath token: https://developer.spotify.com/console/get-audio-features-several-tracks/
 
-		// TODO: somehow need to tell it which audio features to get...
+		// tell it which audio features to get...
 		// and then once it gets the audio features, to add just the danceability score
 		// of that one track to an array of playlist-track-danceability socres
 
@@ -140,8 +142,15 @@
 			},
 			json: true,
 		}).done(function (data) {
-			// TODO: extract danceability scores from audio features
+			// extract danceability scores from audio features
 			console.log("got tracks' audio features ...(*￣０￣)ノ ", data);
+			playlist_tracks_danceability = data.audio_features.map(
+				(data) => data.danceability
+			);
+			console.log(
+				"got tracks' danceability scores! (✿◡‿◡)",
+				playlist_tracks_danceability
+			);
 			// playlist_tracks = data.tracks.items;
 			// console.log('got playlist tracks? ', playlist_tracks);
 			// getPlaylistTrackDanceabilityScores(playlist_tracks);
@@ -162,5 +171,31 @@
 		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join
 		trackIds = trackIds.join(',');
 		return trackIds;
+	}
+
+	var danceabilityOrderedAsBimodalSin = [];
+
+	function getDanceabilityOrderedAsBimodalSine(danceabilityScores) {
+		// create a movement that goes from 0 to 1 smoothly
+		// https://www.smashingmagazine.com/2011/10/quick-look-math-animations-javascript/
+		let counter = 0;
+		let increase = (Math.PI * 2) / 100;
+		for (i = 0; i <= 1; i += 0.01) {
+			// TODO: fill x and y into array to compare and order the danceability scsores to match
+			// https://stackoverflow.com/a/13304870/5996491
+			x = i;
+			console.log(x);
+			y = Math.abs(Math.sin(counter));
+			console.log(y);
+			counter = +increase;
+		}
+		console.log('done with w/y bimodal 2pi function');
+		// TODO: order danceability scores as bimodal sine
+		danceabilityOrderedAsBimodalSine = danceabilityScores;
+		console.log(
+			'got danceability scores ordered as a bimodal sine wave (((o(*ﾟ▽ﾟ*)o)))',
+			danceabilityOrderedAsBimodalSine
+		);
+		return danceabilityOrderedAsBimodalSine;
 	}
 })();
