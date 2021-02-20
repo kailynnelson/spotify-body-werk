@@ -80,6 +80,7 @@
 			false
 		);
 
+		// get a list of tracks, with their playlist ID
 		var playlist_tracks = [];
 
 		document
@@ -110,7 +111,8 @@
 			});
 	}
 
-	// var playlist_tracks_danceability = [];
+	// get a list of playlist tracks, with their track IDs
+	var playlist_tracks_danceability = [];
 
 	function getPlaylistTrackDanceabilityScores(tracks) {
 		console.log(
@@ -118,8 +120,47 @@
 			tracks
 		);
 
+		var trackIds = getPlaylistTracksIds(tracks);
+		console.log("got tracks' IDs (｡･∀･)ﾉﾞ ", trackIds);
+
 		// TODO: get track features! https://developer.spotify.com/documentation/web-api/reference/#category-tracks
 
+		// https://api.jquery.com/jquery.ajax/
+		// declare oath token: https://developer.spotify.com/console/get-audio-features-several-tracks/
+
+		// TODO: somehow need to tell it which audio features to get...
+		// and then once it gets the audio features, to add just the danceability score
+		// of that one track to an array of playlist-track-danceability socres
+
+		$.ajax({
+			// max 100 IDs
+			url: 'https://api.spotify.com/v1/audio-features?ids=' + trackIds,
+			headers: {
+				Authorization: 'Bearer ' + access_token,
+			},
+			json: true,
+		}).done(function (data) {
+			// TODO: extract danceability scores from audio features
+			console.log("got tracks' audio features ...(*￣０￣)ノ ", data);
+			// playlist_tracks = data.tracks.items;
+			// console.log('got playlist tracks? ', playlist_tracks);
+			// getPlaylistTrackDanceabilityScores(playlist_tracks);
+			// playlistPlaceholder.innerHTML = playlistTemplate({
+			// 	playlist_id: playlist_id,
+			// 	playlist_name: data.name,
+			// });
+		});
+
 		return;
+	}
+
+	function getPlaylistTracksIds(tracks) {
+		// https://stackoverflow.com/a/46694321/5996491
+		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
+		// QUESTION: what's the difference between 'let' and 'var'?
+		let trackIds = tracks.map((tracks) => tracks.track.id);
+		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join
+		trackIds = trackIds.join(',');
+		return trackIds;
 	}
 })();
