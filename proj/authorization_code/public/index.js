@@ -81,7 +81,8 @@
 		);
 
 		// get a list of tracks, with their playlist ID
-		var playlist_tracks = [];
+		var playlistTracks = [];
+		var playlistDanceabilityScores = [];
 
 		document
 			.getElementById('get-playlist')
@@ -98,15 +99,12 @@
 				}).done(function (data) {
 					console.log('got playlist ╰(*°▽°*)╯ ', data);
 
-					playlist_tracks = data.tracks.items;
+					playlistTracks = data.tracks.items;
 					// console.log('got playlist tracks? ', playlist_tracks);
 
 					// TODO: this shouldn't be triggered with a button called 'Get playlist'; should add a button or clarify button text for interaction effect
-					let playlistDanceabilityScores = getPlaylistTrackDanceabilityScores(
-						playlist_tracks
-					);
-
-					getDanceabilityOrderedAsBimodalSine(playlistDanceabilityScores);
+					// prettier-ignore
+					playlistDanceabilityScores = getPlaylistTrackDanceabilityScores(playlistTracks);
 
 					playlistPlaceholder.innerHTML = playlistTemplate({
 						playlist_id: playlist_id,
@@ -116,17 +114,24 @@
 			});
 	}
 
+	// get danceability sine
+	document
+		.getElementById('get-danceability-sine')
+		.addEventListener('click', function () {
+			getDanceabilitySine(playlistDanceabilityScores, 2);
+		});
+
 	// get a list of playlist tracks, with their track IDs' danceability scores
 	var playlist_tracks_danceability = [];
 
 	function getPlaylistTrackDanceabilityScores(tracks) {
-		console.log(
-			'got tracks! starting dance score method... (´▽`ʃ♡ƪ) ',
-			tracks
-		);
+		// console.log(
+		// 	'got tracks! starting dance score method... (´▽`ʃ♡ƪ) ',
+		// 	tracks
+		// );
 
 		var trackIds = getPlaylistTracksIds(tracks);
-		console.log("got tracks' IDs (｡･∀･)ﾉﾞ ", trackIds);
+		// console.log("got tracks' IDs (｡･∀･)ﾉﾞ ", trackIds);
 		// https://api.jquery.com/jquery.ajax/
 		// declare oath token: https://developer.spotify.com/console/get-audio-features-several-tracks/
 
@@ -142,22 +147,13 @@
 			},
 			json: true,
 		}).done(function (data) {
+			// console.log("got tracks' audio features ...(*￣０￣)ノ ", data);
 			// extract danceability scores from audio features
-			console.log("got tracks' audio features ...(*￣０￣)ノ ", data);
-			playlist_tracks_danceability = data.audio_features.map(
+			playlistDanceabilityScores = data.audio_features.map(
 				(data) => data.danceability
 			);
-			console.log(
-				"got tracks' danceability scores! (✿◡‿◡)",
-				playlist_tracks_danceability
-			);
-			// playlist_tracks = data.tracks.items;
-			// console.log('got playlist tracks? ', playlist_tracks);
-			// getPlaylistTrackDanceabilityScores(playlist_tracks);
-			// playlistPlaceholder.innerHTML = playlistTemplate({
-			// 	playlist_id: playlist_id,
-			// 	playlist_name: data.name,
-			// });
+			// prettier-ignore
+			console.log("got tracks' danceability scores! (✿◡‿◡)", playlistDanceabilityScores);
 		});
 
 		return;
@@ -173,29 +169,68 @@
 		return trackIds;
 	}
 
-	var danceabilityOrderedAsBimodalSin = [];
+	var sineInputs;
+	var sineValue;
+	var sineValueScaled;
+	var idealSine = [];
+	var danceabilitySine = [];
 
-	function getDanceabilityOrderedAsBimodalSine(danceabilityScores) {
-		// create a movement that goes from 0 to 1 smoothly
-		// https://www.smashingmagazine.com/2011/10/quick-look-math-animations-javascript/
-		let counter = 0;
-		let increase = (Math.PI * 2) / 100;
-		for (i = 0; i <= 1; i += 0.01) {
-			// TODO: fill x and y into array to compare and order the danceability scsores to match
-			// https://stackoverflow.com/a/13304870/5996491
-			x = i;
-			console.log(x);
-			y = Math.abs(Math.sin(counter));
-			console.log(y);
-			counter = +increase;
+	// order the given danceability scores to a sine wave,
+	// where the sine wave has the given number of arcs
+	function getDanceabilitySine(scores, arcs) {
+		let steps = scores.length;
+		let [sineInputs, idealSine] = getIdealSine(steps, arcs);
+		console.log('got sineInputs: ', sineInputs);
+		console.log('got idealSine: ', idealSine);
+
+		return danceabilitySine;
+	}
+
+	// thanks to ARB for help with this bit!
+	function getIdealSine(steps, arcs) {
+		let start = (3 / 2) * Math.PI; // start here to start from 0
+		let end = start + 2 * Math.PI * arcs; // end back at 0 after number of cycles
+
+		sineInputs = linspace(start, end, steps); // steps-sized array from start to end
+		// console.log('got sineInputs: ', sineInputs);
+
+		sineValue = sineWave(sineInputs); // sine wave (+1 for no negative values)
+		// console.log('got sineValue: ', sineValue);
+
+		sineValueScaled = scaleSineWave(sineValue); // ensure all values are 0-1, to match spotify 0-1 danceability rating scale
+		// console.log('got sineValueScaled: ', sineValueScaled);
+
+		return [sineInputs, sineValueScaled];
+	}
+
+	// replacement for numpy.linspace
+	// https://stackoverflow.com/questions/40475155/does-javascript-have-a-method-that-returns-an-array-of-numbers-based-on-start-s
+	function linspace(start, stop, steps) {
+		// console.log('start linspace function with steps: ', steps);
+		let arr = [];
+		let step = (stop - start) / (steps - 1);
+		for (i = 0; i < steps; i++) {
+			arr.push(start + step * i);
 		}
-		console.log('done with w/y bimodal 2pi function');
-		// TODO: order danceability scores as bimodal sine
-		danceabilityOrderedAsBimodalSine = danceabilityScores;
-		console.log(
-			'got danceability scores ordered as a bimodal sine wave (((o(*ﾟ▽ﾟ*)o)))',
-			danceabilityOrderedAsBimodalSine
-		);
-		return danceabilityOrderedAsBimodalSine;
+		return arr;
+	}
+
+	// calculate sine value for each point in the given array
+	function sineWave(points) {
+		let arr = [];
+		for (i = 0; i < points.length; i++) {
+			arr.push(Math.sin(points[i]) + 1);
+		}
+		return arr;
+	}
+
+	// calculate scaled sine value for each point in the given array,
+	// to bring all values between 0-1
+	function scaleSineWave(points) {
+		let arr = [];
+		for (i = 0; i < points.length; i++) {
+			arr.push(points[i] / 2);
+		}
+		return arr;
 	}
 })();
