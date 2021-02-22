@@ -19,9 +19,9 @@
 		userProfileTemplate = Handlebars.compile(userProfileSource),
 		userProfilePlaceholder = document.getElementById('user-profile');
 
-	var oauthSource = document.getElementById('oauth-template').innerHTML,
-		oauthTemplate = Handlebars.compile(oauthSource),
-		oauthPlaceholder = document.getElementById('oauth');
+	// var oauthSource = document.getElementById('oauth-template').innerHTML,
+	// 	oauthTemplate = Handlebars.compile(oauthSource),
+	// 	oauthPlaceholder = document.getElementById('oauth');
 
 	var playlistSource = document.getElementById('playlist-template').innerHTML,
 		playlistTemplate = Handlebars.compile(playlistSource),
@@ -38,10 +38,10 @@
 	} else {
 		if (access_token) {
 			// render oauth info
-			oauthPlaceholder.innerHTML = oauthTemplate({
-				access_token: access_token,
-				refresh_token: refresh_token,
-			});
+			// oauthPlaceholder.innerHTML = oauthTemplate({
+			// 	access_token: access_token,
+			// 	refresh_token: refresh_token,
+			// });
 
 			$.ajax({
 				url: 'https://api.spotify.com/v1/me',
@@ -61,32 +61,31 @@
 			$('#loggedin').hide();
 		}
 
-		document.getElementById('obtain-new-token').addEventListener(
-			'click',
-			function () {
-				$.ajax({
-					url: '/refresh_token',
-					data: {
-						refresh_token: refresh_token,
-					},
-				}).done(function (data) {
-					access_token = data.access_token;
-					oauthPlaceholder.innerHTML = oauthTemplate({
-						access_token: access_token,
-						refresh_token: refresh_token,
-					});
-				});
-			},
-			false
-		);
+		// document.getElementById('obtain-new-token').addEventListener(
+		// 	'click',
+		// 	function () {
+		// 		$.ajax({
+		// 			url: '/refresh_token',
+		// 			data: {
+		// 				refresh_token: refresh_token,
+		// 			},
+		// 		}).done(function (data) {
+		// 			access_token = data.access_token;
+		// 			oauthPlaceholder.innerHTML = oauthTemplate({
+		// 				access_token: access_token,
+		// 				refresh_token: refresh_token,
+		// 			});
+		// 		});
+		// 	},
+		// 	false
+		// );
 
 		// get a list of tracks, with their playlist ID
 		var playlistTracks = [];
 		var playlistDanceabilityScores = [];
 
-		document
-			.getElementById('get-playlist')
-			.addEventListener('click', function () {
+		// prettier-ignore
+		document.getElementById('get-playlist').addEventListener('click', function () {
 				// give it the id of my 'body werk set u free' playlist
 				var playlist_id = '3PoDunH7BeHQxWmRhDCOfC';
 				// declare oath token: https://developer.spotify.com/console/get-playlist/
@@ -114,16 +113,7 @@
 			});
 	}
 
-	// get danceability sine
-	document
-		.getElementById('get-danceability-sine')
-		.addEventListener('click', function () {
-			getDanceabilitySine(playlistDanceabilityScores, 2);
-		});
-
 	// get a list of playlist tracks, with their track IDs' danceability scores
-	var playlist_tracks_danceability = [];
-
 	function getPlaylistTrackDanceabilityScores(tracks) {
 		// console.log(
 		// 	'got tracks! starting dance score method... (´▽`ʃ♡ƪ) ',
@@ -152,8 +142,9 @@
 			playlistDanceabilityScores = data.audio_features.map(
 				(data) => data.danceability
 			);
+			// TODO: !important: keep track IDs with track danceability scores... oops
 			// prettier-ignore
-			console.log("got tracks' danceability scores! (✿◡‿◡)", playlistDanceabilityScores);
+			// console.log("got tracks' danceability scores! (✿◡‿◡)", playlistDanceabilityScores);
 		});
 
 		return;
@@ -169,21 +160,39 @@
 		return trackIds;
 	}
 
+	// get danceability sine
+	// prettier-ignore
+	document.getElementById('get-danceability-sine').addEventListener('click', 
+		function () {
+			getDanceabilitySine(playlistDanceabilityScores, 2);
+		}
+	);
+
 	var sineInputs;
 	var sineValue;
 	var sineValueScaled;
 	var idealSine = [];
 	var danceabilitySine = [];
+	var newPlaylist = [];
 
 	// order the given danceability scores to a sine wave,
 	// where the sine wave has the given number of arcs
 	function getDanceabilitySine(scores, arcs) {
 		let steps = scores.length;
-		let [sineInputs, idealSine] = getIdealSine(steps, arcs);
-		console.log('got sineInputs: ', sineInputs);
-		console.log('got idealSine: ', idealSine);
 
-		return danceabilitySine;
+		// 'Functions that return multiple values' => https://www.javascripttutorial.net/es6/destructuring/
+		let [sineInputs, idealSine] = getIdealSine(steps, arcs);
+		// console.log('got sineInputs: ', sineInputs);
+		// console.log('got idealSine: ', idealSine);
+
+		// prettier-ignore
+		let danceabilitySine = generateNewPlaylistByIdealSine(idealSine,playlistDanceabilityScores);
+		// prettier-ignore
+		console.log('got danceability scores by sine wave-best fit ~\(≧▽≦)/~ ', danceabilitySine);
+
+		// TODO: plot points on a graph? create a new playlist with the reorganized songs? the world is our oyster
+		// return [steps, idealSine, danceabilitySine];
+		return;
 	}
 
 	// thanks to ARB for help with this bit!
@@ -232,5 +241,48 @@
 			arr.push(points[i] / 2);
 		}
 		return arr;
+	}
+
+	// thanks again to arb for help with this one
+	function generateNewPlaylistByIdealSine(idealPoints, scores) {
+		let errors = [];
+		let playlist = [];
+		let copyScores = scores;
+
+		for (i = 0; i < idealPoints.length; i++) {
+			for (j = 0; j < copyScores.length; j++) {
+				let difference = idealPoints[i] - copyScores[j];
+				// prettier-ignore
+				// console.log('got difference: ', idealPoints[i], ' - ', copyScores[i], ' = ', difference);
+				let error = Math.abs(difference);
+				error = roundToPlaces(error, 3);
+				// console.log('got error: ', error);
+				errors.push(error); // store error values
+			}
+			// console.log('got errors: ', errors);
+			let closestFit = Math.min(...errors); // the best fit for the next point is the one with the lowest error value from the next plot point
+
+			let closestFitErrorIndex = errors.indexOf(closestFit);
+			let bestFitValue = copyScores[closestFitErrorIndex];
+
+			// console.log('closestFit: ', closestFit);
+			// console.log('closestFitErrorIndex: ', closestFitErrorIndex);
+			// console.log('bestFitValue: ', bestFitValue);
+
+			errors = []; // clear array of errors; choose only from remaining ideal points and scores
+			playlist.push(bestFitValue);
+			// console.log('playlist (so far): ', playlist);
+			copyScores.splice(closestFitErrorIndex, 1); // remove song from options so there are no repeats
+			// console.log('remaining copyScores: ', copyScores);
+		}
+
+		return playlist;
+	}
+
+	// round to given number of decimal places
+	// https://stackoverflow.com/a/48764436/5996491
+	function roundToPlaces(num, places) {
+		let numRounded = Math.round(num + 'e' + places);
+		return Number(numRounded + 'e' + -places);
 	}
 })();
