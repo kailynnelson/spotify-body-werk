@@ -46,7 +46,11 @@ app.get('/login', function (req, res) {
 	res.cookie(stateKey, state);
 
 	// your application requests authorization
-	var scope = 'user-read-private user-read-email playlist-read-collaborative';
+	// TODO: enable app to read non-collaborative playlists
+	// TODO: enable app to modify private playlists
+	// prettier-ignore
+	var scope = 'user-read-private user-read-email playlist-read-collaborative playlist-modify-public';
+
 	res.redirect(
 		'https://accounts.spotify.com/authorize?' +
 			querystring.stringify({
