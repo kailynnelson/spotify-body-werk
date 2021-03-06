@@ -146,13 +146,11 @@
 		console.log('updated myPlaylistTracks: ', myPlaylistTracks);
 	})
 
-	// TODO: add function for getting dance scores
 	var playlistDanceabilityScores = [];
 
 	// prettier-ignore
 	document.getElementById('get-danceability-scores').addEventListener('click', function() {
-		// TODO: add error messages if the user clicks the buttons out of order 
-		// TODO: or, even better: disable the buttons until the info is available to make the interaction successful! 
+		// TODO: disable buttons until the info is available to make the interaction successful (preventing errors, e.g. if the user clicks the buttons out of order)
 		playlistDanceabilityScores = getPlaylistTrackDanceabilityScores(playlistTracks);
 	})
 
@@ -168,7 +166,6 @@
 		// );
 
 		// TODO: fill myPlaylistTracks' danceability scores with getPlaylistTrackDanceabilityScores
-
 		let trackIds = tracks.map((tracks) => tracks.track.id);
 		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join
 		trackIds = trackIds.join(',');
@@ -230,7 +227,8 @@
 
 		// TODO: realized some tracks came back with 'undefined' after making some changes to the playlist; should diagnose + repair
 
-		// TODO: plot points on a graph? create a new playlist with the reorganized songs? the world is our oyster
+		// TODO: plot points on a graph for the user to see best fit?
+
 		// return [steps, idealSine, danceabilitySine];
 		return;
 	}
@@ -377,13 +375,12 @@
 		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...in
 		for (Track in tracks) {
 			console.log('STARTING trackUrisToCsv, whoopee! ...');
-			// TODO: compile track URIs to CSV
+			// TODO: compile track URIs to CSV (not sure I'll have to do this, since I'm using JSON...)
 		}
 		return tracksCsv;
 	}
 
-	// TODO: create github issues from todo comments - https://github.com/marketplace/actions/todo-actions
+	// TODO: what if we auto-DJ'd tracks, giving specific start/end times and blending them?
 
-	// TODO: now we're gettin' crazy. WHAT IF we auto-DJ'd tracks, giving specific start/end times and blending them? would be tough, but SICK
-	// TODO: ...what if I added sensor data, like from an Apple Watch? could get biometrics like heart beat and intentionally hype / calm user-people
+	// TODO: what if I added sensor data, like from an Apple Watch? could get biometrics like heart beat and intentionally hype / calm user-people
 })();
