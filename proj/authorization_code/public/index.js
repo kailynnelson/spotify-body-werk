@@ -81,12 +81,6 @@
 		// );
 	}
 
-	// TODO: testing todo-actions
-
-	// TODO: testing todo-actions: attempt #2
-
-	// TODO: testing todo-actions: attempt #3
-
 	var playlistId = ''; // user input
 	var playlist = null; // a basic object returned by the GET playlist function
 
