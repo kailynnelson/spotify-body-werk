@@ -79,33 +79,33 @@
 		// 	},
 		// 	false
 		// );
-
-		// TODO: allow user to input any playlist ID
-		var playlistId = '3PoDunH7BeHQxWmRhDCOfC'; // my 'body werk set u free' playlist
-
-		// a basic object returned by the GET playlist function
-		var playlist = null;
-
-		// prettier-ignore
-		document.getElementById('get-playlist').addEventListener('click', function () {
-				// declare oath token: https://developer.spotify.com/console/get-playlist/
-				$.ajax({
-					url: 'https://api.spotify.com/v1/playlists/' + playlistId,
-					headers: {
-						Authorization: 'Bearer ' + access_token,
-					},
-					json: true,
-				}).done(function (data) {
-					console.log('got playlist ╰(*°▽°*)╯ ', data);
-					playlist = data;
-
-					playlistPlaceholder.innerHTML = playlistTemplate({
-						playlist_id: playlistId,
-						playlist_name: playlist.name,
-					});
-				});
-			});
 	}
+
+	var playlistId = ''; // user input
+	var playlist = null; // a basic object returned by the GET playlist function
+
+	// TIL to prefer event listeners over onclick: https://stackoverflow.com/a/17378538/5996491 & https://stackoverflow.com/a/12627478/5996491
+	// prettier-ignore
+	document.getElementById('get-playlist').addEventListener('click', function() {
+		playlistId = document.getElementById('userPlaylistIdInput').value;
+
+		// declare oath token: https://developer.spotify.com/console/get-playlist/
+		$.ajax({
+			url: 'https://api.spotify.com/v1/playlists/' + playlistId,
+			headers: {
+				Authorization: 'Bearer ' + access_token,
+			},
+			json: true,
+		}).done(function (data) {
+			console.log('got playlist ╰(*°▽°*)╯ ', data);
+			playlist = data;
+
+			playlistPlaceholder.innerHTML = playlistTemplate({
+				playlist_id: playlistId,
+				playlist_name: playlist.name,
+			});
+		});
+	});
 
 	// get a list of tracks from a given playlist ID
 	var playlistTracks = [];
