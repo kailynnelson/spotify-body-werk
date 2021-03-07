@@ -325,8 +325,20 @@
 	// round to given number of decimal places
 	// https://stackoverflow.com/a/48764436/5996491
 	function roundToPlaces(num, places) {
-		let numRounded = Math.round(num + 'e' + places);
-		return Number(numRounded + 'e' + -places);
+		// console.log('got num: ', num);
+
+		// prevent NaNs from smallllll numbers
+		// https://stackoverflow.com/a/18719937/5996491
+		let numFixed = num.toFixed(20);
+		// console.log('got fixed num: ', numFixed);
+
+		let numRounded = Math.round(numFixed + 'e' + places);
+		// console.log('got rounded num: ', numRounded);
+
+		let returnNum = Number(numRounded + 'e' + -places);
+		// console.log('got return num: ', returnNum);
+
+		return returnNum;
 	}
 
 	// get reordered playlist, based on sine wave-best fit
