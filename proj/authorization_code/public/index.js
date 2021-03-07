@@ -168,7 +168,7 @@
 
 		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join
 		trackIds = trackIds.join(',');
-		console.log("got tracks' IDs (｡･∀･)ﾉﾞ ", trackIds);
+		// console.log("got tracks' IDs (｡･∀･)ﾉﾞ ", trackIds);
 
 		// https://api.jquery.com/jquery.ajax/
 		$.ajax({
@@ -183,8 +183,6 @@
 			// extract danceability scores from audio features
 			// prettier-ignore
 			playlistDanceabilityScores = data.audio_features.map((data) => data.danceability);
-			// prettier-ignore
-			console.log("got tracks' danceability scores! (✿◡‿◡)", playlistDanceabilityScores);
 
 			// https://gomakethings.com/the-array.shift-method-in-vanilla-js/
 			let loopLength = playlistDanceabilityScores.length;
@@ -193,49 +191,50 @@
 				myPlaylistTracks[i].danceabilityScore = playlistDanceabilityScores.shift();
 			}
 
-			console.log('updated myPlaylistTracks: ', myPlaylistTracks);
+			// prettier-ignore
+			console.log('updated myPlaylistTracks with danceability scores! (✿◡‿◡)', myPlaylistTracks);
 		});
-
-		return;
 	}
 
 	// get danceability sine
 	// prettier-ignore
-	document.getElementById('get-danceability-sine').addEventListener('click', 
-		function () {
-			// give '2' for number of arcs in the ideal sine wave
-			getDanceabilitySine(playlistDanceabilityScores, 2);
-		}
-	);
+	document.getElementById('get-danceability-sine').addEventListener('click', function () {
+		// https://www.freecodecamp.org/news/how-to-clone-an-array-in-javascript-1d3183468f6a/
+		let myTracksCopy = myPlaylistTracks.map(track => track);
+	
+		// give '2' for number of arcs in the ideal sine wave
+		let danceabilitySine = getDanceabilitySine(myTracksCopy, 2);
 
-	var sineInputs;
-	var sineValue;
-	var sineValueScaled;
-	var idealSine = [];
-	var danceabilitySine = [];
-	var newPlaylist = [];
+		// TODO: fill in new playlist order, then sort myPlaylistTracks by newIndex ASC
+
+		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
+		// prettier-ignore
+		// let location = tracks.findIndex(track => track.danceabilityScore == bestFitValue); // find the location of this dance value in amongst my array of track objects
+		// console.log('found track location: ', location);
+
+		// tracks[location].newIndex = i; // assign the new index (later, to be sorted into danceability-sine order)
+		// console.log('updated track: ', tracks[location]);
+
+		// prettier-ignore
+		console.log('checking in on playlist tracks... ', myPlaylistTracks);
+		console.log('got danceability scores by sine wave-best fit ~\(≧▽≦)/~ ', danceabilitySine);
+	});
 
 	// order the given danceability scores to a sine wave,
 	// where the sine wave has the given number of arcs
-	function getDanceabilitySine(scores, arcs) {
-		let steps = scores.length;
+	function getDanceabilitySine(tracks, arcs) {
+		let steps = tracks.length;
 
 		// 'Functions that return multiple values' => https://www.javascripttutorial.net/es6/destructuring/
 		let [sineInputs, idealSine] = getIdealSine(steps, arcs);
 		// console.log('got sineInputs: ', sineInputs);
 		// console.log('got idealSine: ', idealSine);
 
+		// TODO: plot points on a graph for the user to see best fit
+
 		// prettier-ignore
-		let danceabilitySine = generateNewPlaylistByIdealSine(idealSine,playlistDanceabilityScores);
-		// prettier-ignore
-		console.log('got danceability scores by sine wave-best fit ~\(≧▽≦)/~ ', danceabilitySine);
-
-		// TODO: realized some tracks came back with 'undefined' after making some changes to the playlist; should diagnose + repair
-
-		// TODO: plot points on a graph for the user to see best fit?
-
-		// return [steps, idealSine, danceabilitySine];
-		return;
+		let scoresByNewPlaylistOrder = getNewPlaylistOrderByIdealSine(idealSine, tracks);
+		return scoresByNewPlaylistOrder;
 	}
 
 	// thanks to ARB for help with this bit!
@@ -246,10 +245,10 @@
 		sineInputs = linspace(start, end, steps); // steps-sized array from start to end
 		// console.log('got sineInputs: ', sineInputs);
 
-		sineValue = sineWave(sineInputs); // sine wave (+1 for no negative values)
+		let sineValue = sineWave(sineInputs); // sine wave (+1 for no negative values)
 		// console.log('got sineValue: ', sineValue);
 
-		sineValueScaled = scaleSineWave(sineValue); // ensure all values are 0-1, to match spotify 0-1 danceability rating scale
+		let sineValueScaled = scaleSineWave(sineValue); // ensure all values are 0-1, to match spotify 0-1 danceability rating scale
 		// console.log('got sineValueScaled: ', sineValueScaled);
 
 		return [sineInputs, sineValueScaled];
@@ -286,40 +285,43 @@
 		return arr;
 	}
 
-	// thanks again to arb for help with this one
-	function generateNewPlaylistByIdealSine(idealPoints, scores) {
+	// thanks again to ARB for help with this one
+	function getNewPlaylistOrderByIdealSine(idealPoints, tracks) {
 		let errors = [];
-		let playlist = [];
-		let copyScores = scores;
+		let reorderedScores = [];
 
 		for (i = 0; i < idealPoints.length; i++) {
-			for (j = 0; j < copyScores.length; j++) {
-				let difference = idealPoints[i] - copyScores[j];
+			for (j = 0; j < tracks.length; j++) {
+				let difference = idealPoints[i] - tracks[j].danceabilityScore;
 				// prettier-ignore
 				// console.log('got difference: ', idealPoints[i], ' - ', copyScores[i], ' = ', difference);
+
 				let error = Math.abs(difference);
 				error = roundToPlaces(error, 3);
 				// console.log('got error: ', error);
+
 				errors.push(error); // store error values
 			}
 			// console.log('got errors: ', errors);
+
 			let closestFit = Math.min(...errors); // the best fit for the next point is the one with the lowest error value from the next plot point
-
-			let closestFitErrorIndex = errors.indexOf(closestFit);
-			let bestFitValue = copyScores[closestFitErrorIndex];
-
 			// console.log('closestFit: ', closestFit);
+			let closestFitErrorIndex = errors.indexOf(closestFit);
 			// console.log('closestFitErrorIndex: ', closestFitErrorIndex);
+			let bestFitValue = tracks[closestFitErrorIndex].danceabilityScore;
 			// console.log('bestFitValue: ', bestFitValue);
 
 			errors = []; // clear array of errors; choose only from remaining ideal points and scores
-			playlist.push(bestFitValue);
-			// console.log('playlist (so far): ', playlist);
-			copyScores.splice(closestFitErrorIndex, 1); // remove song from options so there are no repeats
-			// console.log('remaining copyScores: ', copyScores);
+
+			reorderedScores.push(bestFitValue);
+
+			// TODO: sort tracks by their newIndex values
+
+			tracks.splice(closestFitErrorIndex, 1); // remove track from options so there are no repeats
+			// console.log('remaining tracks: ', tracks);
 		}
 
-		return playlist;
+		return reorderedScores;
 	}
 
 	// round to given number of decimal places
