@@ -151,7 +151,7 @@
 	// prettier-ignore
 	document.getElementById('get-danceability-scores').addEventListener('click', function() {
 		// TODO: disable buttons until the info is available to make the interaction successful (preventing errors, e.g. if the user clicks the buttons out of order)
-		playlistDanceabilityScores = getPlaylistTrackDanceabilityScores(playlistTracks);
+		playlistDanceabilityScores = getPlaylistTrackDanceabilityScores(myPlaylistTracks);
 	})
 
 	// get a list of playlist tracks, with their track IDs' danceability scores
@@ -160,18 +160,15 @@
 	// and then once it gets the audio features, to add just the danceability score
 	// of that one track to an array of playlist-track-danceability socres
 	function getPlaylistTrackDanceabilityScores(tracks) {
-		// console.log(
-		// 	'got tracks! starting dance score method... (´▽`ʃ♡ƪ) ',
-		// 	tracks
-		// );
+		// prettier-ignore
+		// console.log('got tracks! starting dance score method... (´▽`ʃ♡ƪ) ', tracks);
 
-		// TODO: fill myPlaylistTracks' danceability scores with getPlaylistTrackDanceabilityScores
-		let trackIds = tracks.map((tracks) => tracks.track.id);
+		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
+		let trackIds = tracks.map((track) => track.id);
+
 		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join
 		trackIds = trackIds.join(',');
-
-		console.log('got trackIds: ', trackIds);
-		// console.log("got tracks' IDs (｡･∀･)ﾉﾞ ", trackIds);
+		console.log("got tracks' IDs (｡･∀･)ﾉﾞ ", trackIds);
 
 		// https://api.jquery.com/jquery.ajax/
 		$.ajax({
@@ -184,11 +181,19 @@
 		}).done(function (data) {
 			// console.log("got tracks' audio features ...(*￣０￣)ノ ", data);
 			// extract danceability scores from audio features
-			playlistDanceabilityScores = data.audio_features.map(
-				(data) => data.danceability
-			);
 			// prettier-ignore
-			// console.log("got tracks' danceability scores! (✿◡‿◡)", playlistDanceabilityScores);
+			playlistDanceabilityScores = data.audio_features.map((data) => data.danceability);
+			// prettier-ignore
+			console.log("got tracks' danceability scores! (✿◡‿◡)", playlistDanceabilityScores);
+
+			// https://gomakethings.com/the-array.shift-method-in-vanilla-js/
+			let loopLength = playlistDanceabilityScores.length;
+			for (i = 0; i < loopLength; i++) {
+				// prettier-ignore
+				myPlaylistTracks[i].danceabilityScore = playlistDanceabilityScores.shift();
+			}
+
+			console.log('updated myPlaylistTracks: ', myPlaylistTracks);
 		});
 
 		return;
