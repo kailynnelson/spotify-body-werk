@@ -240,7 +240,8 @@
 				}
 			}
 
-			// sort myPlaylistTracks by newIndex ASC
+			// sort myPlaylistTracks by newIndex, ascending
+			// https://stackoverflow.com/a/1129270/5996491
 			myPlaylistTracks.sort((a, b) =>
 				a.newIndex > b.newIndex ? 1 : b.newIndex > a.newIndex ? -1 : 0
 			);
