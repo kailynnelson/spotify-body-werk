@@ -85,7 +85,6 @@
 	var playlist = null; // a basic object returned by the GET playlist function
 
 	// TIL to prefer event listeners over onclick: https://stackoverflow.com/a/17378538/5996491 & https://stackoverflow.com/a/12627478/5996491
-
 	document
 		.getElementById('get-playlist')
 		.addEventListener('click', function () {
@@ -129,13 +128,11 @@
 
 	// create 'Track' objects (with my 'Track' class)
 	// then fill a 'playlist' array with my 'Track' objects
-
 	document
 		.getElementById('create-tracks')
 		.addEventListener('click', function () {
 			playlistTracks = []; // clear any previously filled tracks
 			playlistTracks = playlist.tracks.items;
-			// console.log('got playlistTracks: ', playlistTracks);
 
 			for (i = 0; i < playlistTracks.length; i++) {
 				let item = playlistTracks[i];
@@ -147,7 +144,6 @@
 					item.track.uri,
 					item.track.name
 				);
-				// console.log('created myTrack: ', myTrack.name);
 
 				// push the 'Track' object to my 'myPlaylistTracks' array
 				myPlaylistTracks.push(myTrack);
@@ -172,14 +168,11 @@
 	// and then once it gets the audio features, to add just the danceability score
 	// of that one track to an array of playlist-track-danceability socres
 	function getPlaylistTrackDanceabilityScores(tracks) {
-		// console.log('got tracks! starting dance score method... (´▽`ʃ♡ƪ) ', tracks);
-
 		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
 		let trackIds = tracks.map((track) => track.id);
 
 		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join
 		trackIds = trackIds.join(',');
-		// console.log("got tracks' IDs (｡･∀･)ﾉﾞ ", trackIds);
 
 		// https://api.jquery.com/jquery.ajax/
 		$.ajax({
@@ -190,9 +183,7 @@
 			},
 			json: true,
 		}).done(function (data) {
-			// console.log("got tracks' audio features ...(*￣０￣)ノ ", data);
 			// extract danceability scores from audio features
-
 			playlistDanceabilityScores = data.audio_features.map(
 				(data) => data.danceability
 			);
@@ -267,8 +258,6 @@
 
 		// 'Functions that return multiple values' => https://www.javascripttutorial.net/es6/destructuring/
 		let [sineInputs, idealSine] = getIdealSine(steps, arcs);
-		// console.log('got sineInputs: ', sineInputs);
-		// console.log('got idealSine: ', idealSine);
 
 		// TODO: plot points on a graph for the user to see best fit
 
@@ -276,6 +265,7 @@
 			idealSine,
 			tracks
 		);
+
 		return scoresByNewPlaylistOrder;
 	}
 
@@ -285,13 +275,9 @@
 		let end = start + 2 * Math.PI * arcs; // end back at 0 after number of cycles
 
 		sineInputs = linspace(start, end, steps); // steps-sized array from start to end
-		// console.log('got sineInputs: ', sineInputs);
 
 		let sineValue = sineWave(sineInputs); // sine wave (+1 for no negative values)
-		// console.log('got sineValue: ', sineValue);
-
 		let sineValueScaled = scaleSineWave(sineValue); // ensure all values are 0-1, to match spotify 0-1 danceability rating scale
-		// console.log('got sineValueScaled: ', sineValueScaled);
 
 		return [sineInputs, sineValueScaled];
 	}
@@ -358,19 +344,11 @@
 	// round to given number of decimal places
 	// https://stackoverflow.com/a/48764436/5996491
 	function roundToPlaces(num, places) {
-		// console.log('got num: ', num);
-
 		// prevent NaNs from smallllll numbers
 		// https://stackoverflow.com/a/18719937/5996491
 		let numFixed = num.toFixed(20);
-		// console.log('got fixed num: ', numFixed);
-
 		let numRounded = Math.round(numFixed + 'e' + places);
-		// console.log('got rounded num: ', numRounded);
-
 		let returnNum = Number(numRounded + 'e' + -places);
-		// console.log('got return num: ', returnNum);
-
 		return returnNum;
 	}
 
