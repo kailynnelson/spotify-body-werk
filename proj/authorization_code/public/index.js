@@ -228,7 +228,7 @@
 			// fill in new indices into myPlaylistTracks
 			for (i = 0; i < danceabilitySine.length; i++) {
 				// find the location of this dance value in amongst my array of track objects
-				// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
+				// https://www.digitalocean.com/community/tutorials/js-array-search-methods#bonus-filter
 				let locations = myPlaylistTracks.filter(
 					(track) => track.danceabilityScore == danceabilitySine[i]
 				);
@@ -238,6 +238,7 @@
 
 					// only update the newIndex if the track doesn't already have one
 					// allows tracks with duplicate danceability scores to distribute properly across the best-fit sine
+					// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
 					if (
 						myPlaylistTracks[location].newIndex == null &&
 						myPlaylistTracks.find((track) => track.newIndex == i) ==
