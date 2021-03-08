@@ -85,27 +85,29 @@
 	var playlist = null; // a basic object returned by the GET playlist function
 
 	// TIL to prefer event listeners over onclick: https://stackoverflow.com/a/17378538/5996491 & https://stackoverflow.com/a/12627478/5996491
-	// prettier-ignore
-	document.getElementById('get-playlist').addEventListener('click', function() {
-		playlistId = document.getElementById('userPlaylistIdInput').value;
 
-		// declare oath token: https://developer.spotify.com/console/get-playlist/
-		$.ajax({
-			url: 'https://api.spotify.com/v1/playlists/' + playlistId,
-			headers: {
-				Authorization: 'Bearer ' + access_token,
-			},
-			json: true,
-		}).done(function (data) {
-			console.log('got playlist ╰(*°▽°*)╯ ', data);
-			playlist = data;
+	document
+		.getElementById('get-playlist')
+		.addEventListener('click', function () {
+			playlistId = document.getElementById('userPlaylistIdInput').value;
 
-			playlistPlaceholder.innerHTML = playlistTemplate({
-				playlist_id: playlistId,
-				playlist_name: playlist.name,
+			// declare oath token: https://developer.spotify.com/console/get-playlist/
+			$.ajax({
+				url: 'https://api.spotify.com/v1/playlists/' + playlistId,
+				headers: {
+					Authorization: 'Bearer ' + access_token,
+				},
+				json: true,
+			}).done(function (data) {
+				console.log('got playlist ╰(*°▽°*)╯ ', data);
+				playlist = data;
+
+				playlistPlaceholder.innerHTML = playlistTemplate({
+					playlist_id: playlistId,
+					playlist_name: playlist.name,
+				});
 			});
 		});
-	});
 
 	// get a list of tracks from a given playlist ID
 	var playlistTracks = [];
@@ -127,32 +129,42 @@
 
 	// create 'Track' objects (with my 'Track' class)
 	// then fill a 'playlist' array with my 'Track' objects
-	// prettier-ignore
-	document.getElementById('create-tracks').addEventListener('click', function() {
 
-		playlistTracks = playlist.tracks.items;
-		// console.log('got playlistTracks: ', playlistTracks);
+	document
+		.getElementById('create-tracks')
+		.addEventListener('click', function () {
+			playlistTracks = []; // clear any previously filled tracks
+			playlistTracks = playlist.tracks.items;
+			// console.log('got playlistTracks: ', playlistTracks);
 
-		for (i = 0; i < playlistTracks.length; i++) {
-			let item = playlistTracks[i];
+			for (i = 0; i < playlistTracks.length; i++) {
+				let item = playlistTracks[i];
 
-			// create a 'Track' object from my custom class 
-			let myTrack = new Track(i, item.track.id, item.track.uri, item.track.name);
-			// console.log('created myTrack: ', myTrack.name);
+				// create a 'Track' object from my custom class
+				let myTrack = new Track(
+					i,
+					item.track.id,
+					item.track.uri,
+					item.track.name
+				);
+				// console.log('created myTrack: ', myTrack.name);
 
-			// push the 'Track' object to my 'myPlaylistTracks' array 
-			myPlaylistTracks.push(myTrack);
-		}
-		console.log('updated myPlaylistTracks: ', myPlaylistTracks);
-	})
+				// push the 'Track' object to my 'myPlaylistTracks' array
+				myPlaylistTracks.push(myTrack);
+			}
+			console.log('updated myPlaylistTracks: ', myPlaylistTracks);
+		});
 
 	var playlistDanceabilityScores = [];
 
-	// prettier-ignore
-	document.getElementById('get-danceability-scores').addEventListener('click', function() {
-		// TODO: disable buttons until the info is available to make the interaction successful (preventing errors, e.g. if the user clicks the buttons out of order)
-		playlistDanceabilityScores = getPlaylistTrackDanceabilityScores(myPlaylistTracks);
-	})
+	document
+		.getElementById('get-danceability-scores')
+		.addEventListener('click', function () {
+			// TODO: disable buttons until the info is available to make the interaction successful (preventing errors, e.g. if the user clicks the buttons out of order)
+			playlistDanceabilityScores = getPlaylistTrackDanceabilityScores(
+				myPlaylistTracks
+			);
+		});
 
 	// get a list of playlist tracks, with their track IDs' danceability scores
 	// declare oath token: https://developer.spotify.com/console/get-audio-features-several-tracks/
@@ -160,7 +172,6 @@
 	// and then once it gets the audio features, to add just the danceability score
 	// of that one track to an array of playlist-track-danceability socres
 	function getPlaylistTrackDanceabilityScores(tracks) {
-		// prettier-ignore
 		// console.log('got tracks! starting dance score method... (´▽`ʃ♡ƪ) ', tracks);
 
 		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
@@ -181,44 +192,72 @@
 		}).done(function (data) {
 			// console.log("got tracks' audio features ...(*￣０￣)ノ ", data);
 			// extract danceability scores from audio features
-			// prettier-ignore
-			playlistDanceabilityScores = data.audio_features.map((data) => data.danceability);
+
+			playlistDanceabilityScores = data.audio_features.map(
+				(data) => data.danceability
+			);
 
 			// https://gomakethings.com/the-array.shift-method-in-vanilla-js/
 			let loopLength = playlistDanceabilityScores.length;
 			for (i = 0; i < loopLength; i++) {
-				// prettier-ignore
-				myPlaylistTracks[i].danceabilityScore = playlistDanceabilityScores.shift();
+				myPlaylistTracks[
+					i
+				].danceabilityScore = playlistDanceabilityScores.shift();
 			}
 
-			// prettier-ignore
-			console.log('updated myPlaylistTracks with danceability scores! (✿◡‿◡)', myPlaylistTracks);
+			console.log(
+				'updated myPlaylistTracks with danceability scores! (✿◡‿◡)',
+				myPlaylistTracks
+			);
 		});
 	}
 
 	// get danceability sine
-	// prettier-ignore
-	document.getElementById('get-danceability-sine').addEventListener('click', function () {
-		// https://www.freecodecamp.org/news/how-to-clone-an-array-in-javascript-1d3183468f6a/
-		let myTracksCopy = myPlaylistTracks.map(track => track);
-	
-		// give '2' for number of arcs in the ideal sine wave
-		let danceabilitySine = getDanceabilitySine(myTracksCopy, 2);
+	document
+		.getElementById('get-danceability-sine')
+		.addEventListener('click', function () {
+			// https://www.freecodecamp.org/news/how-to-clone-an-array-in-javascript-1d3183468f6a/
+			let myTracksCopy = myPlaylistTracks.map((track) => track);
 
-		// TODO: fill in new playlist order, then sort myPlaylistTracks by newIndex ASC
+			// give '2' for number of arcs in the ideal sine wave
+			let danceabilitySine = getDanceabilitySine(myTracksCopy, 2);
 
-		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
-		// prettier-ignore
-		// let location = tracks.findIndex(track => track.danceabilityScore == bestFitValue); // find the location of this dance value in amongst my array of track objects
-		// console.log('found track location: ', location);
+			// TODO: simplify (～￣(OO)￣)ブ should pass back reordered INDICES not reordered scores
+			// so i don't have to deal with duplicate dance scores...
 
-		// tracks[location].newIndex = i; // assign the new index (later, to be sorted into danceability-sine order)
-		// console.log('updated track: ', tracks[location]);
+			// fill in new indices into myPlaylistTracks
+			for (i = 0; i < danceabilitySine.length; i++) {
+				// find the location of this dance value in amongst my array of track objects
+				// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
+				let locations = myPlaylistTracks.filter(
+					(track) => track.danceabilityScore == danceabilitySine[i]
+				);
 
-		// prettier-ignore
-		console.log('checking in on playlist tracks... ', myPlaylistTracks);
-		console.log('got danceability scores by sine wave-best fit ~\(≧▽≦)/~ ', danceabilitySine);
-	});
+				for (j = 0; j < locations.length; j++) {
+					let location = locations[j].originalIndex;
+
+					// only update the newIndex if the track doesn't already have one
+					// allows tracks with duplicate danceability scores to distribute properly across the best-fit sine
+					if (
+						myPlaylistTracks[location].newIndex == null &&
+						myPlaylistTracks.find((track) => track.newIndex == i) ==
+							undefined
+					) {
+						myPlaylistTracks[location].newIndex = i;
+					}
+				}
+			}
+
+			// sort myPlaylistTracks by newIndex ASC
+			myPlaylistTracks.sort((a, b) =>
+				a.newIndex > b.newIndex ? 1 : b.newIndex > a.newIndex ? -1 : 0
+			);
+
+			console.log(
+				"sorted tracks by danceability scores' sine wave-best fit ~(≧▽≦)/~ ",
+				myPlaylistTracks
+			);
+		});
 
 	// order the given danceability scores to a sine wave,
 	// where the sine wave has the given number of arcs
@@ -232,8 +271,10 @@
 
 		// TODO: plot points on a graph for the user to see best fit
 
-		// prettier-ignore
-		let scoresByNewPlaylistOrder = getNewPlaylistOrderByIdealSine(idealSine, tracks);
+		let scoresByNewPlaylistOrder = getNewPlaylistOrderByIdealSine(
+			idealSine,
+			tracks
+		);
 		return scoresByNewPlaylistOrder;
 	}
 
@@ -293,30 +334,19 @@
 		for (i = 0; i < idealPoints.length; i++) {
 			for (j = 0; j < tracks.length; j++) {
 				let difference = idealPoints[i] - tracks[j].danceabilityScore;
-				// prettier-ignore
-				// console.log('got difference: ', idealPoints[i], ' - ', copyScores[i], ' = ', difference);
 
 				let error = Math.abs(difference);
 				error = roundToPlaces(error, 3);
-				// console.log('got error: ', error);
 
 				errors.push(error); // store error values
 			}
-			// console.log('got errors: ', errors);
 
 			let closestFit = Math.min(...errors); // the best fit for the next point is the one with the lowest error value from the next plot point
-			// console.log('closestFit: ', closestFit);
 			let closestFitErrorIndex = errors.indexOf(closestFit);
-			// console.log('closestFitErrorIndex: ', closestFitErrorIndex);
 			let bestFitValue = tracks[closestFitErrorIndex].danceabilityScore;
-			// console.log('bestFitValue: ', bestFitValue);
 
 			errors = []; // clear array of errors; choose only from remaining ideal points and scores
-
 			reorderedScores.push(bestFitValue);
-
-			// TODO: sort tracks by their newIndex values
-
 			tracks.splice(closestFitErrorIndex, 1); // remove track from options so there are no repeats
 			// console.log('remaining tracks: ', tracks);
 		}
@@ -344,12 +374,12 @@
 	}
 
 	// get reordered playlist, based on sine wave-best fit
-	// prettier-ignore
-	document.getElementById('get-replaced-playlist').addEventListener('click', 
-		function () {
+
+	document
+		.getElementById('get-replaced-playlist')
+		.addEventListener('click', function () {
 			reorderPlaylistBySineWaveBestFit(playlistDanceabilityScores, 2);
-		}
-	);
+		});
 
 	// REPLACE (not REORDER, because we're giving URIs) given playlist with sine wave-best fit-ordered tracks
 	// https://developer.spotify.com/documentation/web-api/reference/#endpoint-reorder-or-replace-playlists-tracks
