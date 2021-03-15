@@ -358,54 +358,60 @@
 	document
 		.getElementById('get-replaced-playlist')
 		.addEventListener('click', function () {
-			reorderPlaylistBySineWaveBestFit(playlistDanceabilityScores, 2);
+			reorderPlaylistBySineWaveBestFit(myPlaylistTracks, 2);
 		});
 
 	// REPLACE (not REORDER, because we're giving URIs) given playlist with sine wave-best fit-ordered tracks
 	// https://developer.spotify.com/documentation/web-api/reference/#endpoint-reorder-or-replace-playlists-tracks
 	function reorderPlaylistBySineWaveBestFit(orderedScores) {
 		let trackUrisCsv = trackUrisToCsv(orderedScores); // track URIs as a CSV list
-		console.log('ready to rumble with the REPLACE situation...');
+		console.log(
+			'ready to rumble with the REPLACE situation...',
+			trackUrisCsv
+		);
 
-		// $.ajax({
-		// 	// max 100 IDs
-		// 	// TODO: if more than 100 given, loop through/recall?
-		// 	url: 'https://api.spotify.com/v1/playlists/' + playlistId + '/tracks',
-		// 	headers: {
-		// 		Authorization: 'Bearer ' + access_token,
-		// 	},
-		// 	// https://stackoverflow.com/a/49598763/5996491
-		// 	type: 'PUT',
-		// 	contentType: 'application/json',
-		// 	request: {
-		// 		// QUESTION: do I want to track the snapshot_id?
-		// 		uris: trackUrisCsv,
-		// 		range_start: 0,
-		// 		insert_before: orderedScores.length,
-		// 		range_length: orderedScores.length,
-		// 	},
-		// 	json: true,
-		// })
-		// 	.done(function () {
-		// 		// TODO: enable user-person to view the songs in the reordered playlist in the app (w/o having to open spotify)
-		// 		console.log('done reordering! check spootify.');
-		// 	})
-		// 	.fail(function (message) {
-		// 		console.log(
-		// 			"oops, that didn't work :/ you tried, though. here's the error: ",
-		// 			message
-		// 		);
-		// 	});
+		$.ajax({
+			// max 100 IDs
+			// TODO: if more than 100 given, loop through/recall?
+			url: 'https://api.spotify.com/v1/playlists/' + playlistId + '/tracks',
+			headers: {
+				Authorization: 'Bearer ' + access_token,
+			},
+			// https://stackoverflow.com/a/49598763/5996491
+			type: 'PUT',
+			contentType: 'application/json',
+			// QUESTION: do I want to track the snapshot_id?
+			// https://github.com/spotify/web-api/issues/360#issuecomment-262523889
+			data: JSON.stringify({
+				uris: trackUrisCsv,
+				range_start: 0,
+				insert_before: orderedScores.length,
+				range_length: orderedScores.length,
+			}),
+			json: true,
+		})
+			.done(function () {
+				// TODO: enable user-person to view the songs in the reordered playlist in the app (w/o having to open spotify)
+				console.log('done reordering! check spootify.');
+			})
+			.fail(function (message) {
+				console.log(
+					"oops, that didn't work :/ you tried, though. here's the error: ",
+					message
+				);
+			});
 		return;
 	}
 
+	// returns given tracks as their uris in an array of strings
 	function trackUrisToCsv(tracks) {
 		let tracksCsv = [];
-		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...in
-		for (Track in tracks) {
-			console.log('STARTING trackUrisToCsv, whoopee! ...');
-			// TODO: compile track URIs to CSV (not sure I'll have to do this, since I'm using JSON...)
+
+		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
+		for (track of tracks) {
+			tracksCsv.push(track.uri);
 		}
+
 		return tracksCsv;
 	}
 
