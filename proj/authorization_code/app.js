@@ -41,7 +41,7 @@ var app = express();
 // trying this: https://stackoverflow.com/a/35649993/5996491
 // app.use('/', express.static(__dirname, {index: 'index.html'}));
 
-app.use(express.static(__dirname + '/proj/authorization_code/public'))
+app.use(express.static(__dirname + '/public'))
 	.use(cors())
 	.use(cookieParser());
 
