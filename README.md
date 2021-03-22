@@ -1,5 +1,7 @@
-Side project to help me understand how to use APIs 
+Side project to help me understand how to use APIs ...and a whole lot else about web development
 
-...and make a sweet app that organizes your Spotify playlists by their danceability scores 
+Making a sweet app that organizes your Spotify playlists by their danceability scores!
 
-Soon to be located at https://bodywerk.kailyn.dev/! 
+UNDER CONSTRUCTION @ https://bodywerk.kailyn.dev/
+
+![image](./under-construction-pika.gif)
