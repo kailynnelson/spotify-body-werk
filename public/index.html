@@ -1,20 +1,66 @@
 <!DOCTYPE html>
 <head>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-	<link
-		href="https://fonts.googleapis.com/css?family=Alegreya|Source+Sans+Pro&display=swap"
-		rel="stylesheet"
-	/>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>body werk set u free</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="styles.css" />
 </head>
-<html>
+<html lang="en">
 	<body>
-		<h1>Lorem Ipsum generator</h1>
-		<p>How many paragraphs do you want to generate?</p>
-		<input type="number" id="quantity" min="1" max="20" value="1" />
-		<button id="generate">Generate</button>
-		<button id="copy">Copy!</button>
-		<div id="lorem"></div>
-		<script type="text/javascript" src="script.js"></script>
+		<div class="container">
+			<h1>Body Werk</h1>
+			<div class="row">
+				<!-- Spotify user login -->
+				<div class="col-md-4 mb-3 loggedOut">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title">Welcome</h5>
+							<a href="/login" class="btn btn-primary"
+								>Please log in with Spotify</a
+							>
+						</div>
+					</div>
+				</div>
+				<!-- Display logged-in user Spotify info -->
+				<div class="col-md-4 mb-3 loggedIn">
+					<div id="userProfile" class="card"></div>
+				</div>
+				<!-- Playlist information -->
+				<div class="col-md-8 mb-3 loggedIn">
+					<div class="card"></div>
+				</div>
+			</div>
+		</div>
+		<!-- User Spotify info template -->
+		<script id="userProfileTemplate" type="text/x-handlebars-template">
+			<div class='card'>
+				<img
+					src='{{images.0.url}}'
+					class='card-img-top'
+					alt='Spotify user profile image'
+				/>
+				<div class='card-body'>
+					<h5 class='card-title'>
+						Hi, {{display_name}}
+					</h5>
+					<dl>
+						<dt>
+							Email
+						</dt>
+						<dd>
+							{{email}}
+						</dd>
+						<dt>
+							Country
+						</dt>
+						<dd>
+							{{country}}
+						</dd>
+					</dl>
+				</div>
+			</div>
+		</script>
+		<script src="./bundle.js"></script>
 	</body>
 </html>
