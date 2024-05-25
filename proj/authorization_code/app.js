@@ -13,10 +13,8 @@ var cors = require('cors');
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 
-// var client_id = '1234'; // Your client id
-// var client_secret = '5678'; // Your secret
-var client_id = '9ce6439d7c48459f9c8945915bf649fd'; // Your client id
-var client_secret = '9917b99789ec4c57bcded208389b52e9'; // Your secret
+var client_id = '1234'; // Your client id
+var client_secret = '5678'; // Your secret
 // var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
 var redirect_uri = 'https://bodywerk.kailyn.dev/callback'; // Your redirect uri
 
